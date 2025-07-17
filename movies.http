@@ -1,0 +1,2 @@
+### Obtener todas las peliculas
+GET http://localhost:8080/movies
