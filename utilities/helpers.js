@@ -1,0 +1,1 @@
+export const findIndexById = (arr, id) => arr.findIndex(item => item?.id === id)
