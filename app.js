@@ -1,15 +1,12 @@
-import { express } from 'express'
-import { cors } from 'cors'
-import { moviesRouter } from './routes/movies'
-
-const PORT = process.env.PORT ?? 8080
+import express from 'express'
+import { moviesRouter } from './routes/movies.js'
 
 const app = express()
 app.disable('x-powered-by')
-
 app.use(express.json())
-app.use(cors())
 app.use('/movies', moviesRouter)
+
+const PORT = process.env.PORT ?? 8080
 
 app.listen(PORT, () => {
     console.log(`server listening on http://localhost:${PORT}`)

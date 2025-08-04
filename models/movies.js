@@ -1,5 +1,5 @@
-import { findIndexById } from "../utilities/helpers"
-import { require } from "../utilities/require"
+import { findIndexById } from "../utilities/helpers.js"
+import { require } from "../utilities/require.js"
 const movies = require('../movies.json')
 
 export class MovieModel {

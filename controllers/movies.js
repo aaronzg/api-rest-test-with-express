@@ -1,4 +1,4 @@
-import { MovieModel } from "../models/movies"
+import { MovieModel } from "../models/movies.js"
 import { validateMovie, validatePartialMovie } from '../schemas/movieSchema.js'
 
 export class MovieController {
@@ -28,7 +28,7 @@ export class MovieController {
         if(!result.success) return res.status(400).json({ error: JSON.parse(result.error.message)})
         
         const { id } = req.params
-        const updatedMovie = await MovieModel({id, input: result.data})
+        const updatedMovie = await MovieModel.update({ id, input: result.data })
         if(!updatedMovie) return res.status(404).json({message: 'Movie not found'})
         res.json(updatedMovie)
     }

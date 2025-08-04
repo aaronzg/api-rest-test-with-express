@@ -1,20 +1,19 @@
 import { Router } from "express";
-import { require } from "../utilities/require";
-import { MovieController } from "../controllers/movies";
+import { MovieController } from "../controllers/movies.js";
 
 export const moviesRouter = Router()
 
 // Recuperar pelicula por id
-app.get('/movies/:id', MovieController.getById)
+moviesRouter.get('/:id', MovieController.getById)
 
 // Recuperar peliculas por genero
-moviesRouter.get('/movies', MovieController.getAll)
+moviesRouter.get('/', MovieController.getAll)
 
 // Crear una pelicula
-moviesRouter.post('/movies', MovieController.create)
+moviesRouter.post('/', MovieController.create)
 
 // Actualizar una pelicula
-moviesRouter.patch('/movies/:id', MovieController.update)
+moviesRouter.patch('/:id', MovieController.update)
 
 // Borrar una pelicula
-moviesRouter.delete('/movies/:id', MovieController.delete)
+moviesRouter.delete('/:id', MovieController.delete)
