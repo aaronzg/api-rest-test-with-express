@@ -1,5 +1,4 @@
 import { createConnection } from "mysql2/promise";
-import mysql from "mysql2/promise";
 
 const config = {
     port: 3306,
@@ -85,6 +84,60 @@ export class MovieModel {
             [movie_id, title, year, director, duration, poster, rate]
         );
 
+        await this.insertGenres({ genre, id: movie_id })
+        
+        const createdMovie = await this.getById({ id: movie_id })
+        
+
+        return createdMovie
+    }
+
+    static async update({ id, input }) {
+        const movie = {
+            title: input.title ?? null,
+            year: input.year ?? null,
+            director: input.director ?? null,
+            duration: input.duration ?? null,
+            poster: input.poster ?? null,
+            genre: input.genre ?? null
+        }
+
+        const { title, year, director, duration, poster, genre } = movie;
+
+        await connection.query(`
+                UPDATE movies SET
+                title = IFNULL(?, title),
+                year = IFNULL(?, year),
+                director = IFNULL(?, director),
+                duration = IFNULL(?, duration),
+                poster = IFNULL(?, poster)
+                WHERE id = UUID_TO_BIN(?);
+            `, [title, year, director, duration, poster, id])
+
+        if (genre) {
+            await connection.query(`
+                    DELETE FROM movie_genres
+                    WHERE movie_id = UUID_TO_BIN(?);
+                `, [id])
+            
+            await this.insertGenres({ genre, id })
+        }
+        
+
+        const updatedMovie  = await this.getById({ id })
+
+        return updatedMovie
+    }
+
+    static async delete({ id }) {
+        const [moviesResult] = await connection.query(`DELETE FROM movie_genres WHERE movie_id = UUID_TO_BIN(?);`, [id])
+        const [genresResult] =  await connection.query(`DELETE FROM movies WHERE id = UUID_TO_BIN(?);`, [id])
+        
+        return moviesResult.affectedRows > 1
+
+    }
+
+    static async insertGenres ({ genre, id }) {
         for (const g of genre) {
             const lowerGenre = g.toLowerCase();
 
@@ -95,57 +148,8 @@ export class MovieModel {
         
             await connection.query(
               `INSERT INTO movie_genres (movie_id, genre_id) VALUES (UUID_TO_BIN(?), ?);`,
-              [movie_id, genre_id]
+              [id , genre_id]
             );
         }
-
-
-
-        const [ movies ] = await connection.query(
-            `
-                SELECT BIN_TO_UUID(m.id) id, title, year, director, duration, poster, rate, JSON_ARRAYAGG(g.genre) AS genre
-                FROM movies m
-                JOIN movie_genres mg ON
-                m.id = mg.movie_id
-                JOIN genres g ON
-                mg.genre_id = g.id
-                WHERE m.id = UUID_TO_BIN(?)
-                GROUP BY m.id;
-            `,
-            [movie_id]
-        );
-
-        return movies[0]
     }
-
-    static async update({ id, input }) {
-        const movie = {
-            title: input.title ?? '',
-            year: input.year ?? 0,
-            director: input.director ?? '',
-            duration: input.duration ?? 0,
-            poster: input.poster ?? '',
-            genre: input.genre ?? []
-        }
-
-        const { title, year, director, duration, poster, genre } = movie;
-
-        await connection.query(`
-                UPDATE movies SET
-                title = IF(CHAR_LENGTH(?) = 0, title, ?),
-                year = IF(? = 0, year, ?),
-                director = IF(CHAR_LENGTH(?) = 0, director, ?),
-                duration = IF(? = 0, duration, ?),
-                poster = IF(CHAR_LENGTH(?) = 0, poster, ?),
-            `, [title, title, year, year, director, director, duration, duration, poster, poster, genre, genre])
-
-        const [updatedMovie] = await connection.query(`
-                SELECT * FROM movies
-                WHERE id = UUID_TO_BIN(?);
-            `, [id])
-
-        console.log(updatedMovie)
-    }
-
-    static async delete({ id }) {}
 }

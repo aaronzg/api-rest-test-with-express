@@ -2,7 +2,7 @@
 GET http://localhost:8080/movies
 
 ### Recuperar una película por id
-GET http://localhost:8080/movies/5617f874-722c-11f0-8281-3822e22685e1
+GET http://localhost:8080/movies/2a118ee6-73ac-11f0-ab23-788cb5538720
 
 ### Recuperar todas las películas por un género
 GET http://localhost:8080/movies?genre=drama
@@ -12,7 +12,7 @@ POST http://localhost:8080/movies
 Content-Type: application/json
 
 {
-  "sql": "SELECT * FROM users",
+  "sql": "SELECT * FROM movies",
   "title": "The Godfather",
   "year": 1975,
   "director": "Francis Ford Coppola",
@@ -25,13 +25,16 @@ Content-Type: application/json
 }
 
 ### Actualizar una película
-PATCH http://localhost:8080/movies/dcdd0fad-a94c-4810-8acc-5f108d3b18c3
+PATCH http://localhost:8080/movies/b6d8943f-73c9-11f0-ab23-788cb5538720
 Content-Type: application/json
 
 {
-  "year": 2022,
-  "title": "hola"
+  "title": "El Padrino",
+  "genre": [
+    "Adventure",
+    "Action"
+  ]
 }
 
 ### Borrar una pelicula
-DELETE http://localhost:8080/movies/dcdd0fad-a94c-4810-8acc-5f108d3b18c3
+DELETE http://localhost:8080/movies/d29de8ef-73bf-11f0-ab23-788cb5538720
